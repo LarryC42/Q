@@ -2,6 +2,7 @@ package q
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -28,6 +29,9 @@ func IsValidRequestName(name string) bool {
 
 // Send sends a message to serverName
 func Send(traceID, serverName string, message []byte, headers ...Header) error {
+	if !IsValidRequestName((serverName)) {
+		return fmt.Errorf("'%s' was not a valid request name", serverName)
+	}
 	if nc == nil {
 		Open()
 	}
@@ -39,6 +43,9 @@ func Send(traceID, serverName string, message []byte, headers ...Header) error {
 
 // Request sends a request to serverName and returns reply
 func Request(traceID, serverName string, message []byte, timeout time.Duration, headers ...Header) ([]byte, error) {
+	if !IsValidRequestName((serverName)) {
+		return nil, fmt.Errorf("'%s' was not a valid request name", serverName)
+	}
 	if nc == nil {
 		Open()
 	}

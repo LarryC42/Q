@@ -87,7 +87,7 @@ func (s server) ID() string {
 	return s.id
 }
 
-var subscriptions map[string][]*server
+var subscriptions map[string][]*server = make(map[string][]*server)
 
 // IsValidServerName returns true if topic is a valid subscription
 func IsValidServerName(name string) bool {
@@ -97,13 +97,13 @@ func IsValidServerName(name string) bool {
 	}
 	for _, r := range name {
 		if gt {
-			return false
+			return false // Something after >
 		}
 		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != rune('.') && r != rune('*') && r != rune('>') {
-			return false
+			return false // Not a valid character
 		}
 		if r == rune('>') {
-			gt = true
+			gt = true // Track we hit the end
 		}
 	}
 	return true
@@ -143,12 +143,12 @@ func newServer(serverName, queueName string, handler Handler, opts ...Option) (S
 	return svc, nil
 }
 
-func new(topic, queue string, handler Handler, opt *Options) (*server, error) {
+func new(serverName, queue string, handler Handler, opt *Options) (*server, error) {
 	var err error
 	svc := server{}
 	svc.id = NewID()
 	svc.handler = handler
-	svc.topic = topic
+	svc.topic = serverName
 	svc.queue = queue
 	svc.options = opt
 
@@ -237,9 +237,9 @@ func scaleDown(topic string, n int) error {
 // Scale scales the number of servers by n
 func Scale(topic string, n int) error {
 	if n > 0 {
-		scaleUp(topic, n)
+		return scaleUp(topic, n)
 	} else if n < 0 {
-		scaleDown(topic, -n)
+		return scaleDown(topic, -n)
 	}
 	return nil // nothing to do if n==0, also not an error
 }

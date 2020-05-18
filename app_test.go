@@ -1,7 +1,6 @@
 package q
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -15,5 +14,7 @@ func TestAppName(t *testing.T) {
 
 func TestAppID(t *testing.T) {
 	var id = AppID()
-	fmt.Println(id)
+	if id == "" {
+		t.Error("AppID is empty")
+	}
 }

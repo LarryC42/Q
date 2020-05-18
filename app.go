@@ -17,7 +17,7 @@ func AppName() string {
 	return appName
 }
 
-// SetAppName sets the application name
+// SetAppName sets the application name, default name is the executable name
 func SetAppName(name string) Option {
 	return func(t *Options) {
 		appName = name
