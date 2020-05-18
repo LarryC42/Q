@@ -156,7 +156,7 @@ func new(serverName, queue string, handler Handler, opt *Options) (*server, erro
 		svc.subscription, err = nc.Subscribe(svc.topic, func(m *nats.Msg) {
 			reply, err := svc.handler(svc, m.Subject, m.Data)
 			if err != nil {
-				nc.Publish(m.Reply, []byte("error"))
+				nc.Publish(m.Reply, []byte(fmt.Sprintf("error:%s", err)))
 			}
 			if m.Reply != "" {
 				nc.Publish(m.Reply, reply)
@@ -166,7 +166,7 @@ func new(serverName, queue string, handler Handler, opt *Options) (*server, erro
 		svc.subscription, err = nc.QueueSubscribe(svc.topic, svc.queue, func(m *nats.Msg) {
 			reply, err := svc.handler(svc, m.Subject, m.Data)
 			if err != nil {
-				nc.Publish(m.Reply, []byte("error"))
+				nc.Publish(m.Reply, []byte(fmt.Sprintf("error:%s", err)))
 			}
 			if m.Reply != "" {
 				nc.Publish(m.Reply, reply)

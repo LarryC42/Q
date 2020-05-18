@@ -2,6 +2,7 @@ package q
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -55,6 +56,10 @@ func Request(traceID, serverName string, message []byte, timeout time.Duration, 
 	reply, err := nc.Request(serverName, buildMessage(traceID, message, headers...), timeout)
 	if err != nil {
 		return nil, err
+	}
+	var msg = string(reply.Data)
+	if msg[:6] == "error:" {
+		return nil, errors.New(msg[6:])
 	}
 	return reply.Data, nil
 }
